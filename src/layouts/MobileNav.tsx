@@ -52,20 +52,20 @@ const navigationItems = [
 // For now, we'll assume student role - this would come from auth context
 const currentRole = "student";
 
-export function Sidebar() {
+export function MobileNav() {
   const filteredItems = navigationItems.filter(item => 
     item.roles.includes(currentRole)
   );
 
   return (
-    <aside className="w-64 min-h-[calc(100vh-4rem)] bg-card/30 backdrop-blur-sm border-r border-border/50">
+    <div className="h-full bg-card border-r border-border">
       <div className="p-4">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">Student Hub</h2>
+            <h2 className="font-semibold text-foreground">Smart Student</h2>
             <p className="text-sm text-muted-foreground">Hub</p>
           </div>
         </div>
@@ -90,6 +90,6 @@ export function Sidebar() {
           ))}
         </nav>
       </div>
-    </aside>
+    </div>
   );
 }

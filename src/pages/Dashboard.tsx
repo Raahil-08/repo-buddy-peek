@@ -18,6 +18,9 @@ export default function Dashboard() {
   const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔑 New state for animated chart
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,6 +39,28 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
+
+  // 🔑 Animate doughnut when stats load
+  useEffect(() => {
+    if (stats?.portfolioProgress !== undefined) {
+      let start = 0;
+      const end = stats.portfolioProgress;
+      const duration = 1000; // 1 second
+      const stepTime = 10;
+      const step = (end - start) / (duration / stepTime);
+
+      const interval = setInterval(() => {
+        start += step;
+        if (start >= end) {
+          start = end;
+          clearInterval(interval);
+        }
+        setAnimatedProgress(Math.round(start));
+      }, stepTime);
+
+      return () => clearInterval(interval);
+    }
+  }, [stats?.portfolioProgress]);
 
   if (loading) {
     return (
@@ -101,6 +126,7 @@ export default function Dashboard() {
             <div className="flex flex-col items-center">
               <div className="relative w-32 h-32 mb-4">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  {/* Background circle */}
                   <circle
                     cx="50"
                     cy="50"
@@ -110,6 +136,7 @@ export default function Dashboard() {
                     fill="transparent"
                     className="text-muted"
                   />
+                  {/* Animated progress circle */}
                   <circle
                     cx="50"
                     cy="50"
@@ -118,13 +145,13 @@ export default function Dashboard() {
                     strokeWidth="8"
                     fill="transparent"
                     strokeDasharray={`${2 * Math.PI * 40}`}
-                    strokeDashoffset={`${2 * Math.PI * 40 * (1 - (stats?.portfolioProgress || 0) / 100)}`}
-                    className="text-primary transition-all duration-1000 ease-out"
+                    strokeDashoffset={`${2 * Math.PI * 40 * (1 - animatedProgress / 100)}`}
+                    className="text-primary transition-all duration-100 ease-out"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-2xl font-bold text-foreground">
-                    {stats?.portfolioProgress || 0}%
+                    {animatedProgress}%
                   </span>
                 </div>
               </div>
